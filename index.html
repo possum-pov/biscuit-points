@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Biscuit Points</title>
+
+<style>
+
+body {
+    height: 100vh;
+    margin: 0;
+    background: white;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+
+#biscuit {
+    height: calc(100vh - 90px);
+    max-width: 95vw;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform .15s;
+}
+
+
+.bounce {
+    animation: bounce .25s;
+}
+
+
+@keyframes bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+
+.glow {
+    animation: neon .8s;
+}
+
+
+@keyframes neon {
+
+    0% {
+        filter:
+        drop-shadow(0 0 10px #ff0000)
+        drop-shadow(0 0 20px #ff00ff);
+    }
+
+    25% {
+        filter:
+        drop-shadow(0 0 20px #00ffff)
+        drop-shadow(0 0 40px #00ff00);
+    }
+
+    50% {
+        filter:
+        drop-shadow(0 0 30px yellow)
+        drop-shadow(0 0 60px orange);
+    }
+
+    75% {
+        filter:
+        drop-shadow(0 0 25px #ff00ff)
+        drop-shadow(0 0 50px blue);
+    }
+
+    100% {
+        filter:
+        drop-shadow(0 0 10px white);
+    }
+}
+
+
+#counter {
+    position: fixed;
+    bottom: 20px;
+    left: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    background:white;
+    padding:8px 15px;
+    border-radius:15px;
+}
+
+
+#reset {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+
+    width: 35px;
+    height: 35px;
+
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+
+#reset img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+.pop {
+
+    position:absolute;
+    font-size:45px;
+    font-weight:bold;
+
+    animation:float 1s forwards;
+
+}
+
+
+@keyframes float {
+
+    from {
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+    to {
+        opacity:0;
+        transform:translateY(-180px) scale(1.5);
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<img id="biscuit"
+src="images/biscuit.png">
+
+
+<div id="counter">
+Biscuits: 0
+</div>
+
+
+<button id="reset">
+    <img src="images/reset.svg">
+</button>
+
+
+
+<script>
+
+let points = 0;
+
+
+const biscuit=document.getElementById("biscuit");
+const counter=document.getElementById("counter");
+const reset=document.getElementById("reset");
+
+
+
+biscuit.onclick=function(){
+
+points++;
+
+counter.innerHTML="Biscuits: "+points;
+
+
+biscuit.classList.remove("glow");
+biscuit.classList.remove("bounce");
+
+void biscuit.offsetWidth;
+
+biscuit.classList.add("glow");
+biscuit.classList.add("bounce");
+
+
+
+playCasinoSound();
+
+}
+
+
+
+reset.onclick=function(){
+
+points=0;
+counter.innerHTML="Biscuits: 0";
+
+}
+
+
+
+
+function playCasinoSound(){
+
+let ctx=new AudioContext();
+
+
+// coin sounds
+
+for(let i=0;i<5;i++){
+
+let osc=ctx.createOscillator();
+let gain=ctx.createGain();
+
+osc.type="sine";
+
+osc.frequency.value=900+i*150;
+
+gain.gain.setValueAtTime(.15,ctx.currentTime+i*.05);
+gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3+i*.05);
+
+
+osc.connect(gain);
+gain.connect(ctx.destination);
+
+
+osc.start(ctx.currentTime+i*.05);
+osc.stop(ctx.currentTime+.3+i*.05);
+
+}
+
+
+
+// cash register tone
+
+let osc=ctx.createOscillator();
+let gain=ctx.createGain();
+
+osc.type="square";
+osc.frequency.value=1200;
+
+gain.gain.setValueAtTime(.1,ctx.currentTime+.3);
+gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.7);
+
+
+osc.connect(gain);
+gain.connect(ctx.destination);
+
+
+osc.start(ctx.currentTime+.3);
+osc.stop(ctx.currentTime+.7);
+
+
+}
+
+
+</script>
+
+
+</body>
+</html>
